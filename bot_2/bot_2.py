@@ -13,6 +13,9 @@ def input_error(func):
     return inner
 
 def parse_input(user_input):
+    if not user_input.strip():
+        return "", []
+    
     cmd, *args = user_input.split()
     cmd = cmd.strip().lower()
     return cmd, args
@@ -23,8 +26,8 @@ def add_contact(args, contacts):
         return "Error: Invalid number of arguments for 'add' command. Use: add [name] [phone]"
     
     name, phone = args
-    if not name or not phone:
-        raise ValueError("Name and phone cannot be empty.")
+    if not phone.isdigit():
+        raise ValueError("Phone must contain only digits.")
     contacts[name] = phone
     return "Contact added."
 
@@ -34,11 +37,9 @@ def change_contact(args, contacts):
         return "Error: Invalid number of arguments for 'change' command. Use: change [name] [phone]"
     
     name, phone = args
-    if not name or not phone:
-        raise ValueError("Name and phone cannot be empty.")
-    if name not in contacts:
-        raise KeyError("Contact does not exist.")
-    contacts[name] = phone
+    if not phone.isdigit():
+        raise ValueError("Phone must contain only digits.")
+    contacts[name] = phone 
     return "Contact updated."
     
 @input_error
@@ -47,10 +48,7 @@ def show_phone(args, contacts):
         return "Error: Invalid number of arguments for 'phone' command. Use: phone [name]"
     
     name = args[0]
-    if not name:
-        raise ValueError("Name cannot be empty.")
-    if name not in contacts:
-        raise KeyError("Contact does not exist.")
+
     return contacts[name]
     
 def show_all_contacts(contacts):
@@ -70,6 +68,10 @@ def main():
         user_input = input("enter command: ")
         command, args = parse_input(user_input)
         
+        if command == "":
+            print("Error: Please enter a command.")
+            continue
+            
         if command in ["close", "exit", "good bye"]:
             print("Good bye!")
             break
